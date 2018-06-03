@@ -75,8 +75,8 @@ class InfiniteListExample extends React.Component {
   }
   render() {
     return (
+			<Spin spinning ={this.state.loading && this.state.hasMore}>
       <div className="demo-infinite-container">
-        
 					<InfiniteScroll
 						initialLoad={false}
 						pageStart={0}
@@ -84,6 +84,7 @@ class InfiniteListExample extends React.Component {
 						hasMore={!this.state.loading && this.state.hasMore}
 						useWindow={false}
 					>
+						
 						<List
 								dataSource={this.state.data}
 								bordered= {true}
@@ -91,22 +92,15 @@ class InfiniteListExample extends React.Component {
 								<List.Item key={item.id}>
 										<List.Item.Meta
 										title={<a href={item.url} target="_blank">{item.title}</a>}
-										description={item.abs}
+										description={<p>{item.abs}<br/>{item.url}</p>}
 										/>
-										<br/>
-										<em>{item.url}</em>
 								</List.Item>
 								)}
 						>
-								{this.state.loading && this.state.hasMore && (
-								<div className="demo-loading-container">
-										<Spin />
-								</div>
-								)}
-						</List>
+						</List>		
 					</InfiniteScroll>
-        
       </div>
+			</Spin>
     );
   }
 }

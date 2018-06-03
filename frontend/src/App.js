@@ -22,10 +22,11 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Layout>
+        <Layout className="layout">
           <Header className="header">
             <img src={logo} className="App-logo" alt="logo"/>
           </Header>
+          <br/>
           <Header className="header">
             <Search
               placeholder="输入搜索内容"
