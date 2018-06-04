@@ -13,27 +13,37 @@ class InfiniteListExample extends React.Component {
 			data: [],
 			loading: false,
 			hasMore: true,
-			word: props.word
+			word: props.word,
+			target: 'baidu'
 		}
 	}
 
 	componentWillReceiveProps(nextProps){
+		if(this.state.target === nextProps.target){
+			this.setState({
+				loading: true,
+			});
+		}
 		this.getData(
 			nextProps.word,
 			0,
+			nextProps.target,
 			(res) => {
 			this.setState({
 				data: res.result,
+				loading: false
 			});
 		});
 		this.setState({
-			word: nextProps.word
+			word: nextProps.word,
+			target: nextProps.target,
+			
 		});
 	}
 
-  getData = (word,pn,callback) => {
+  getData = (word,pn,target,callback) => {
 		if(word !== ''){
-			const fakeDataUrl = 'http://localhost:8000/search/?search='+word+'&pn='+pn;
+			const fakeDataUrl = 'http://localhost:8000/search/?search='+word+'&pn='+pn+'&target='+target;
 			reqwest({
 				url: fakeDataUrl,
 				type: 'json',
@@ -46,13 +56,16 @@ class InfiniteListExample extends React.Component {
 		}
   }
   componentDidMount() {
+		
     this.getData(
 		this.state.word,
-    0,
+		0,
+		this.state.target,
     (res) => {
       console.log(res);
       this.setState({
-        data: res.result,
+				data: res.result
+				
       });
     });
   }
@@ -64,7 +77,8 @@ class InfiniteListExample extends React.Component {
     sum += 10;
     this.getData(
 		this.state.word,
-    sum,
+		sum,
+		this.state.target,
     (res) => {
       data = data.concat(res.result);
       this.setState({

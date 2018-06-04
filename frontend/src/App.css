@@ -34,9 +34,13 @@
   margin-left: auto;
   margin-right: auto;
 }
+.slim {
+  margin-top: 16px !important;
+}
 .content {
   background: rgb(255, 255, 255);
 }
+
 .ant-input {
   font-size: 20px;
 }
