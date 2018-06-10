@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
 from django.http import JsonResponse
+from models import ResultInfo
 import json
 import sys  
 import re   
@@ -10,6 +11,10 @@ import requests
 from bs4 import BeautifulSoup  
 reload(sys)
 sys.setdefaultencoding("utf8")
+
+def decoder(a):
+    return json.loads(a)
+
 def originalURLs(tmpurl):
     tmpPage = requests.get(tmpurl, allow_redirects=False)
     if tmpPage.status_code == 200:
@@ -21,6 +26,8 @@ def originalURLs(tmpurl):
         return 'No URL found!!'
 
 def baiduSearch(key,limit):
+    if ResultInfo.objects.filter(keyword = key, pages = limit, target = 'baidu'):
+        return decoder(ResultInfo.objects.get(keyword = key, pages = limit, target = 'baidu').result)
     search_url='http://www.baidu.com/s?wd=key&pn=limit'
     req=urllib2.urlopen(search_url.replace('key',key).replace('limit',limit)) 
     html=req.read()
@@ -49,10 +56,13 @@ def baiduSearch(key,limit):
         temp['url'] = originalURLs(re_dict[r][0])
         temp['abs'] = re_dict[r][1]
         response['result'].append(temp)
+    ResultInfo.objects.create(keyword = key, pages = limit, target = 'baidu', result = json.dumps(response))
     return response
 # Create your views here.
 
 def googleSearch(key,limit):
+    if ResultInfo.objects.filter(keyword = key, pages = limit, target = 'google'):
+        return decoder(ResultInfo.objects.get(keyword = key, pages = limit, target = 'google').result)
     search_url='http://www.google.com/search?q=key&start=limit'
     pre = urllib2.Request(search_url.replace('key',key).replace('limit',limit))
     pre.add_header("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36")
@@ -76,6 +86,7 @@ def googleSearch(key,limit):
         temp['url'] = url
         temp['abs'] = abstract
         response['result'].append(temp)
+    ResultInfo.objects.create(keyword = key, pages = limit, target = 'google', result = json.dumps(response))
     return response
 
 def getSearchResult(request):
