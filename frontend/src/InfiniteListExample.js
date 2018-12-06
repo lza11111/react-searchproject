@@ -64,8 +64,7 @@ class InfiniteListExample extends React.Component {
     (res) => {
       console.log(res);
       this.setState({
-				data: res.result
-				
+				data: res
       });
     });
   }

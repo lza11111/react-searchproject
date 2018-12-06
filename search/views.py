@@ -33,15 +33,16 @@ def baiduSearch(key,limit):
     html=req.read()
     soup=BeautifulSoup(html,"html.parser")
     linkpattern=re.compile("href=\"(.+?)\"")
-    div=soup.find('div',id='wrapper').find('div',id='wrapper_wrapper').find('div',id='container').find('div',id='content_left')
+    divset=soup.findAll('div',{'class':{'c-container'}})
     re_dict={}
-    for i in range(int(limit)+1,int(limit)+11):
-        divfind = div.find('div',id=str(i))
-        if divfind is not None:
-            a = divfind.find('h3').find('a')
+    # for i in range(int(limit)+1,int(limit)+11):
+        # divfind = div.find('div',id=str(i))
+    for div in divset:
+        if div is not None:
+            a = div.find('h3').find('a')
             re_link=linkpattern.findall(str(a))
             re_title=a.text
-            re_abs = divfind.find('div',class_ = 'c-abstract')
+            re_abs = div.find('div',class_ = 'c-abstract')
             if re_abs is not None:
                 re_abs = re_abs.text
             else:
