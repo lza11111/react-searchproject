@@ -1,4 +1,5 @@
 import React from 'react';
+import qs from 'qs';
 import { List, Spin } from 'antd';
 import reqwest from 'reqwest';
 
@@ -13,37 +14,41 @@ class InfiniteListExample extends React.Component {
 			data: [],
 			loading: false,
 			hasMore: true,
-			word: props.word,
 			target: 'baidu'
 		}
 	}
 
 	componentWillReceiveProps(nextProps){
-		if(this.state.target === nextProps.target){
+		const { search, target, website } = this.props.params;
+
+		if(search !== nextProps.params.search || 
+			 target !== nextProps.params.target || 
+			 website!== nextProps.params.website){
 			this.setState({
 				loading: true,
 			});
-		}
-		this.getData(
-			nextProps.word,
-			0,
-			nextProps.target,
-			(res) => {
-			this.setState({
-				data: res.result,
-				loading: false
+			this.getData({
+					...nextProps.params,
+					pn: 0
+				},
+				(res) => {
+				this.setState({
+					data: res.result,
+					loading: false
+				});
 			});
-		});
-		this.setState({
-			word: nextProps.word,
-			target: nextProps.target,
-			
-		});
+			this.setState({
+				target: nextProps.params.target,
+			});
+		}
 	}
 
-  getData = (word,pn,target,callback) => {
-		if(word !== ''){
-			const fakeDataUrl = 'http://localhost:8000/search/?search='+word+'&pn='+pn+'&target='+target;
+	// getData = (word,pn,target,callback) => {
+  getData = (data,callback) => {
+		console.log(data);
+		if(data.search !== ''){
+			data.search = encodeURIComponent(data.search)
+			const fakeDataUrl = `http://localhost:8000/search/?${qs.stringify(data)}`
 			reqwest({
 				url: fakeDataUrl,
 				type: 'json',
@@ -57,10 +62,10 @@ class InfiniteListExample extends React.Component {
   }
   componentDidMount() {
 		
-    this.getData(
-		this.state.word,
-		0,
-		this.state.target,
+    this.getData({
+			...this.props.params,
+			pn: 0
+		},
     (res) => {
       console.log(res);
       this.setState({
@@ -74,17 +79,18 @@ class InfiniteListExample extends React.Component {
       loading: true,
     });
     sum += 10;
-    this.getData(
-		this.state.word,
-		sum,
-		this.state.target,
-    (res) => {
-      data = data.concat(res.result);
-      this.setState({
-        data,
-        loading: false,
-      });
-    });
+    this.getData({
+				...this.props.params,
+				pn: sum
+			},
+			(res) => {
+				data = data.concat(res.result);
+				this.setState({
+					data,
+					loading: false,
+				});
+			}
+		);
   }
   render() {
     return (

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Input, Radio } from 'antd';
+import { Input, Radio, Checkbox, Transfer } from 'antd';
 import { Layout } from 'antd';
 import logo from './logo.svg';
 
@@ -15,12 +15,26 @@ class App extends Component {
     super(props);
     this.state = {
       text: '',
-      target: 'baidu'
+      textTemp: '',
+      target: 'baidu',
+      webSiteStatus: false,
+      website: '',
+      websiteTemp: '',
+      webSiteStatusTemp: false,
     };
   }
 
-  handleChange = value => this.setState({ text: value });
-  handleOptionChange = (e) => {
+  handleWordChange = value => this.setState({ 
+    text: value, 
+    website: this.state.websiteTemp,
+    webSiteStatus: this.state.webSiteStatusTemp
+  });
+
+  handleWebSiteStatusChange = e => this.setState({ webSiteStatusTemp: e.target.checked })
+
+  handleWebSiteChange = e => this.setState({ websiteTemp: e.target.value })
+
+  handleOptionChange = (e) => { 
     this.setState({
       target: e.target.value
     })
@@ -30,27 +44,32 @@ class App extends Component {
       <div>
         <Layout className="layout">
           <Header className="header">
-            <img src={logo} className="App-logo" alt="logo"/>
+            {/* <img src={logo} className="App-logo" alt="logo"/> */}
+            <h3>广度优先文本挖掘爬虫系统</h3>
           </Header>
           <br/>
-          <Header className="header">
+          <Header className="search">
             <Search
               placeholder="输入搜索内容"
               enterButton="搜索"
               size="large"
-              onSearch={this.handleChange}
+              onSearch={this.handleWordChange}
             />
           </Header>
-          <Header className='header silm'> 
-            <RadioGroup onChange={this.handleOptionChange} value={this.state.target}>
-              <Radio value={'baidu'}>百度搜索</Radio>
-              <Radio value={'google'}>谷歌搜索</Radio>
-            </RadioGroup>
+          <Header className='options silm'> 
+            <div className='website-group'>
+              <Checkbox onChange={this.handleWebSiteStatusChange}>限定站点</Checkbox>
+              <Input disabled={!this.state.webSiteStatusTemp} onChange={this.handleWebSiteChange} className="website-input" size="small" placeholder="example.com"/>
+            </div>
+            
           </Header>
           <Content className="content">
             <InfiniteListExample
-              word = {this.state.text}
-              target = {this.state.target}
+              params = {{
+                search: this.state.text,
+                target: this.state.target,
+                website: this.state.webSiteStatus ? this.state.website : ''
+              }}
             >
             </InfiniteListExample>
           </Content>

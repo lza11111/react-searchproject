@@ -30,9 +30,31 @@
   background: rgb(255, 255, 255);
   font-size: 1.5em;
   text-align: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.search {
+  background: rgb(255, 255, 255);
+  font-size: 1.5em;
+  text-align: center;
   width: 50%;
   margin-left: auto;
   margin-right: auto;
+}
+.options {
+  background: rgb(255, 255, 255);
+  display: flex;
+  justify-content: center;
+}
+.options .website-group {
+  display: flex;
+  align-items:center;
+  flex-direction: row;
+  justify-content: center;
+}
+.options .website-group .website-input {
+  width: 200px;
 }
 .slim {
   margin-top: 16px !important;

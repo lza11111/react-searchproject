@@ -25,11 +25,11 @@ def originalURLs(tmpurl):
     else:
         return 'No URL found!!'
 
-def baiduSearch(key,limit):
-    if ResultInfo.objects.filter(keyword = key, pages = limit, target = 'baidu'):
-        return decoder(ResultInfo.objects.get(keyword = key, pages = limit, target = 'baidu').result)
-    search_url='http://www.baidu.com/s?wd=key&pn=limit'
-    req=urllib2.urlopen(search_url.replace('key',key).replace('limit',limit)) 
+def baiduSearch(key,limit,website):
+    if ResultInfo.objects.filter(keyword = key, pages = limit, target = 'baidu', website=website):
+        return decoder(ResultInfo.objects.get(keyword = key, pages = limit, target = 'baidu', website=website).result)
+    search_url='http://www.baidu.com/s?q1=key&pn=limit&q6=website'
+    req=urllib2.urlopen(search_url.replace('key', key).replace('limit', limit).replace('website', website)) 
     html=req.read()
     soup=BeautifulSoup(html,"html.parser")
     linkpattern=re.compile("href=\"(.+?)\"")
@@ -41,6 +41,8 @@ def baiduSearch(key,limit):
         if div is not None:
             a = div.find('h3').find('a')
             re_link=linkpattern.findall(str(a))
+            if not re_link[0].startswith('http'):
+                continue
             re_title=a.text
             re_abs = div.find('div',class_ = 'c-abstract')
             if re_abs is not None:
@@ -48,7 +50,7 @@ def baiduSearch(key,limit):
             else:
                 re_abs = "暂无简介"
             re_dict[re_title]=(re_link[0],re_abs)
-            
+
     response = {}
     response['result'] = []
     for r in re_dict:
@@ -94,7 +96,8 @@ def getSearchResult(request):
     content = request.GET.get('search','')
     pn = request.GET.get('pn','')
     target = request.GET.get('target','')
+    website = request.GET.get('website','')
     if target == 'baidu':
-        return JsonResponse(baiduSearch(content,pn))
+        return JsonResponse(baiduSearch(content,pn,website))
     if target == 'google':
         return JsonResponse(googleSearch(content,pn))
