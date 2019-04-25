@@ -44,8 +44,8 @@ class App extends Component {
       <div>
         <Layout className="layout">
           <Header className="header">
-            {/* <img src={logo} className="App-logo" alt="logo"/> */}
-            <h3>广度优先文本挖掘爬虫系统</h3>
+            <img src={logo} className="App-logo" alt="logo"/>
+            <h3>百度爬虫</h3>
           </Header>
           <br/>
           <Header className="search">
